@@ -1,6 +1,9 @@
 #include <iostream>
+#include "Commands/Commands.h"
 
 int main() {
-	std::cout << "Hello world!" << std::endl;
+	Commands::Initialize();
+
+	std::cout << Commands::GetCommandFromString("lol") << std::endl;
 	return 0;
 }
