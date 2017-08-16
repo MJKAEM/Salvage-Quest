@@ -32,6 +32,8 @@ void Commands::ReadDataFile(){
 
 		Commands::commandToIdMap.insert(std::pair<std::string, unsigned long long>(rawCommand, id));
 	}
+
+	file.close();
 }
 
 unsigned long long Commands::GetCommandFromString(std::string rawCommand) {
