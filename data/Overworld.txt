@@ -1,0 +1,11 @@
+Width	10									
+Height	10									
+warehouse						science_building				
+										
+										
+										
+				oilrig						
+										
+										
+		cave					gun_store	spawn	fishing	
+							battery_recharge	salvage_sell	oil_sell	general_store

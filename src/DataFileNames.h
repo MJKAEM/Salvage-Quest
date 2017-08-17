@@ -3,6 +3,9 @@
 
 #include <string>
 
-const std::string commandsRawDataFile = "data/commands.txt";
+namespace RawData {
+const std::string commandsFile = "data/commands.txt";
+const std::string overworldFile = "data/overworld.txt";
+}
 
 #endif /* DATAFILENAMES_H_ */
