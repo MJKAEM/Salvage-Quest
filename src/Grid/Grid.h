@@ -21,6 +21,8 @@ private:
 public:
 	Grid(std::string);
 	unsigned long long GetAdjacentPosition(unsigned long long, Direction);
+	std::string ToString();
+	std::string ToString(unsigned long long);
 };
 
 #endif /* GRID_GRID_H_ */

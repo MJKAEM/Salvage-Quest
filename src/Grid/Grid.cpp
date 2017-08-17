@@ -2,6 +2,8 @@
 
 #include <fstream>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 
 Grid::Grid(std::string dataFilePath) {
 	std::ifstream file(dataFilePath);
@@ -26,7 +28,8 @@ Grid::Grid(std::string dataFilePath) {
 
 	// Read file until empty.
 	for (unsigned long long row = 0; row < Grid::height; row++) {
-		for (unsigned long long column = 0; column < Grid::width - 1; column++) {
+		for (unsigned long long column = 0; column < Grid::width - 1;
+				column++) {
 			std::getline(file, rawInput, '\t');
 			Grid::areas.push_back(rawInput);
 		}
@@ -45,23 +48,53 @@ Grid::Grid(std::string dataFilePath) {
  * @param sourcePosition Position to consider the 'center'
  * @param direction Cardinal direction of the adjacent position
  */
-unsigned long long Grid::GetAdjacentPosition(unsigned long long sourcePosition, Direction direction) {
-	switch(direction) {
+unsigned long long Grid::GetAdjacentPosition(unsigned long long sourcePosition,
+		Direction direction) {
+	switch (direction) {
 	case NORTH:
-		return (sourcePosition >= Grid::width) ? (sourcePosition - Grid::width) : sourcePosition;
+		return (sourcePosition >= Grid::width) ?
+				(sourcePosition - Grid::width) : sourcePosition;
 
 	case WEST:
-		return (sourcePosition % Grid::width != 0) ? (sourcePosition - 1) : sourcePosition;
+		return (sourcePosition % Grid::width != 0) ?
+				(sourcePosition - 1) : sourcePosition;
 
 	case EAST:
-		return ((sourcePosition % Grid::width) < (Grid::width - 1)) ? (sourcePosition + 1) : sourcePosition;
+		return ((sourcePosition % Grid::width) < (Grid::width - 1)) ?
+				(sourcePosition + 1) : sourcePosition;
 
 	case SOUTH:
-		return (sourcePosition < (Grid::width * (Grid::height - 1))) ? (sourcePosition + Grid::width) : sourcePosition;
+		return (sourcePosition < (Grid::width * (Grid::height - 1))) ?
+				(sourcePosition + Grid::width) : sourcePosition;
 
 	default:
-		std::cerr << "Invalid direction at: " << __FILE__ << ", line: " << __LINE__ << std::endl;
+		std::cerr << "Invalid direction at: " << __FILE__ << ", line: "
+				<< __LINE__ << std::endl;
 		_exit(0);
 		return sourcePosition;
 	}
+}
+
+std::string Grid::ToString() {
+	size_t maxNameLength = 0;
+
+	for (unsigned long long i = 0; i < Grid::width * Grid::height; i++) {
+		maxNameLength = std::max(Grid::areas.at(i).length(), maxNameLength);
+	}
+
+	std::cout << maxNameLength << std::endl;
+
+	std::string gridRepresentation;
+
+	for (unsigned long long row = 0; row < Grid::height; row++) {
+		gridRepresentation.append("|");
+		for (unsigned long long column = 0; column < Grid::width; column++) {
+			std::ostringstream stream;
+			stream << std::setw(maxNameLength) << Grid::areas.at((row * Grid::width) + column);
+			gridRepresentation.append(stream.str() + "|");
+		}
+		gridRepresentation.append("\n");
+	}
+
+	return gridRepresentation;
 }
