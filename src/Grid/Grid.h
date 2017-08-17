@@ -4,6 +4,13 @@
 #include <string>
 #include <vector>
 
+enum Direction {
+	NORTH,
+	WEST,
+	EAST,
+	SOUTH
+};
+
 class Grid {
 private:
 	std::vector<std::string> areas;
@@ -13,6 +20,7 @@ private:
 
 public:
 	Grid(std::string);
+	unsigned long long GetAdjacentPosition(unsigned long long, Direction);
 };
 
 #endif /* GRID_GRID_H_ */

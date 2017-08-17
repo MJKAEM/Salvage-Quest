@@ -37,3 +37,31 @@ Grid::Grid(std::string dataFilePath) {
 
 	file.close();
 }
+
+/**
+ * Gets the adjacent position in the specified direction from the source position.
+ * If the adjacent position is out of bounds, then return the source position.
+ *
+ * @param sourcePosition Position to consider the 'center'
+ * @param direction Cardinal direction of the adjacent position
+ */
+unsigned long long Grid::GetAdjacentPosition(unsigned long long sourcePosition, Direction direction) {
+	switch(direction) {
+	case NORTH:
+		return (sourcePosition >= Grid::width) ? (sourcePosition - Grid::width) : sourcePosition;
+
+	case WEST:
+		return (sourcePosition % Grid::width != 0) ? (sourcePosition - 1) : sourcePosition;
+
+	case EAST:
+		return ((sourcePosition % Grid::width) < (Grid::width - 1)) ? (sourcePosition + 1) : sourcePosition;
+
+	case SOUTH:
+		return (sourcePosition < (Grid::width * (Grid::height - 1))) ? (sourcePosition + Grid::width) : sourcePosition;
+
+	default:
+		std::cerr << "Invalid direction at: " << __FILE__ << ", line: " << __LINE__ << std::endl;
+		_exit(0);
+		return sourcePosition;
+	}
+}
