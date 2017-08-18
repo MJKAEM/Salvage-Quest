@@ -2,6 +2,7 @@
 #define GRID_GRID_H_
 
 #include <fstream>
+#include <limits>
 #include <map>
 #include <string>
 #include <vector>
@@ -24,9 +25,13 @@ private:
 	std::string targetVersion, mapVersion;
 
 	Grid();
+	void ReadHeaders();
 	void ReadHeaders(std::istream&);
+	void ReadMetadata();
 	void ReadMetadata(std::istream&);
+	void ReadShortcuts();
 	void ReadShortcuts(std::istream&);
+	void ReadBody();
 	void ReadBody(std::istream&);
 
 public:

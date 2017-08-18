@@ -22,11 +22,36 @@ Grid::Grid(std::string dataFilePath) {
 }
 
 /**
- * Reads the file header for information and sets the Grid values listed..
+ * Searches the data file for the __HEADER_BEGIN__ tag. Next, it reads the
+ * headers and calls other header-related functions.
+ */
+void Grid::ReadHeaders() {
+	std::ifstream file(Grid::dataFilePath);
+	std::string line;
+
+	// Find __HEADER_BEGIN__ tag.
+	while (std::getline(file, line)) {
+		std::istringstream lineStream(line);
+
+		std::string tag;
+		std::getline(lineStream, tag, '\t');
+
+		if (tag == "__HEADER_BEGIN__") {
+			Grid::ReadHeaders(file);
+			break;
+		}
+	}
+}
+
+/**
+ * Reads the file header from a file and calls other header-related
+ * functions until the __HEADER_END__ tag is reached. Assumes that some form
+ * of processing has put the stream to directly after the newline of the
+ * __HEADER_BEGIN__ tag.
  *
  * @param rawStream Raw input stream to read the headers from
  */
-void Grid::ReadHeaders(std::istream &rawStream) {
+void Grid::ReadHeaders(std::istream& rawStream) {
 	std::string line;
 
 	while (std::getline(rawStream, line)) {
@@ -46,14 +71,48 @@ void Grid::ReadHeaders(std::istream &rawStream) {
 }
 
 /**
- * Read metadata from a file and stores the information into their respective variables
- * until the __METADATA_END__ tag is reached. Prints out errors in metadata information.
- * Assumes that some form of processing has put the stream to directly after the newline
- * of the __METADATA_BEGIN__ tag.
+ * Searches the data file for the __METADATA_BEGIN__ tag. Next, it reads the
+ * metadata and stores the information to its corresponding variables.
+ */
+void Grid::ReadMetadata() {
+	std::ifstream file(Grid::dataFilePath);
+	std::string line;
+
+	// Find __HEADER_BEGIN__ tag.
+	while (std::getline(file, line)) {
+		std::istringstream lineStream(line);
+
+		std::string tag;
+		std::getline(lineStream, tag, '\t');
+
+		if (tag == "__HEADER_BEGIN__") {
+			break;
+		}
+	}
+
+	// Find __METADATA_BEGIN__ tag.
+	while (std::getline(file, line)) {
+		std::istringstream lineStream(line);
+
+		std::string tag;
+		std::getline(lineStream, tag, '\t');
+
+		if (tag == "__METADATA_BEGIN__") {
+			Grid::ReadMetadata(file);
+			break;
+		}
+	}
+}
+
+/**
+ * Reads metadata from a file and stores the information into their respective
+ * variables until the __METADATA_END__ tag is reached. Prints out errors in
+ * metadata information. Assumes that some form of processing has put the
+ * stream to directly after the newline of the __METADATA_BEGIN__ tag.
  *
  * @param rawStream Raw input stream to read the metadata from
  */
-void Grid::ReadMetadata(std::istream &rawStream) {
+void Grid::ReadMetadata(std::istream& rawStream) {
 	std::string line;
 	while (std::getline(rawStream, line)) {
 		std::istringstream lineStream(line);
@@ -79,31 +138,31 @@ void Grid::ReadMetadata(std::istream &rawStream) {
 	}
 
 	Grid::width =
-			Grid::additionalMetadataMap.find("width") ?
+			Grid::additionalMetadataMap.count("width") ?
 					std::stoull(Grid::additionalMetadataMap.at("width")) : 0;
 	Grid::additionalMetadataMap.erase("width");
 	Grid::height =
-			Grid::additionalMetadataMap.find("height") ?
+			Grid::additionalMetadataMap.count("height") ?
 					std::stoull(Grid::additionalMetadataMap.at("height")) : 0;
 	Grid::additionalMetadataMap.erase("height");
 	Grid::name =
-			Grid::additionalMetadataMap.find("name") ?
+			Grid::additionalMetadataMap.count("name") ?
 					Grid::additionalMetadataMap.at("name") : Grid::dataFilePath;
 	Grid::additionalMetadataMap.erase("name");
 	Grid::author =
-			Grid::additionalMetadataMap.find("author") ?
+			Grid::additionalMetadataMap.count("author") ?
 					Grid::additionalMetadataMap.at("author") : "";
 	Grid::additionalMetadataMap.erase("author");
 	Grid::description =
-			Grid::additionalMetadataMap.find("description") ?
+			Grid::additionalMetadataMap.count("description") ?
 					Grid::additionalMetadataMap.at("description") : "";
 	Grid::additionalMetadataMap.erase("description");
 	Grid::targetVersion =
-			Grid::additionalMetadataMap.find("target version") ?
+			Grid::additionalMetadataMap.count("target version") ?
 					Grid::additionalMetadataMap.at("target version") : "";
 	Grid::additionalMetadataMap.erase("target version");
 	Grid::mapVersion =
-			Grid::additionalMetadataMap.find("map version") ?
+			Grid::additionalMetadataMap.count("map version") ?
 					Grid::additionalMetadataMap.at("map version") : "";
 	Grid::additionalMetadataMap.erase("map version");
 
@@ -118,13 +177,48 @@ void Grid::ReadMetadata(std::istream &rawStream) {
 }
 
 /**
- * Read shortcuts from a file and stores the information into a map of shortcut to area name
- * until the __SHORTCUTS_END__ tag is reached. Assumes that some form of processing has put
- * the stream directly after the newline of the __SHORTCUTS_BEGIN__ tag.
+ * Searches the data file for the __SHORTCUTS_BEGIN__ tag. Next, it reads the
+ * shortcuts and stores the information into a map of shortcuts to area names.
+ */
+void Grid::ReadShortcuts() {
+	std::ifstream file(Grid::dataFilePath);
+	std::string line;
+
+	// Find __HEADER_BEGIN__ tag.
+	while (std::getline(file, line)) {
+		std::istringstream lineStream(line);
+
+		std::string tag;
+		std::getline(lineStream, tag, '\t');
+
+		if (tag == "__HEADER_BEGIN__") {
+			break;
+		}
+	}
+
+	// Find __SHORTCUTS_BEGIN tag.
+	while (std::getline(file, line)) {
+		std::istringstream lineStream(line);
+
+		std::string tag;
+		std::getline(lineStream, tag, '\t');
+
+		if (tag == "__SHORTCUTS_BEGIN__") {
+			Grid::ReadShortcuts(file);
+			break;
+		}
+	}
+}
+
+/**
+ * Reads shortcuts from a file and stores the information into a map of
+ * shortcuts to area names until the __SHORTCUTS_END__ tag is reached. Assumes
+ * that some form of processing has put the stream directly after the newline
+ * of the __SHORTCUTS_BEGIN__ tag.
  *
  * @param rawStream Raw input stream to read the shortcuts from
  */
-void Grid::ReadShortcuts(std::istream &rawStream) {
+void Grid::ReadShortcuts(std::istream& rawStream) {
 	std::string line;
 	while (std::getline(rawStream, line)) {
 		std::istringstream lineStream(line);
@@ -148,7 +242,36 @@ void Grid::ReadShortcuts(std::istream &rawStream) {
 	}
 }
 
-void Grid::ReadBody(std::istream &rawStream) {
+/**
+ * Searches the data file for the __BODY_START__ tag. Next, it reads the body
+ * and stores the information into a vector of area names until the
+ * __BODY_END__ tag is reached or the areas specified have been read.
+ */
+void Grid::ReadBody() {
+	std::ifstream file(Grid::dataFilePath);
+	std::string line;
+	while (std::getline(file, line)) {
+		std::istringstream lineStream(line);
+
+		std::string tag;
+		std::getline(lineStream, tag, '\t');
+
+		if (tag == "__BODY_BEGIN__") {
+			Grid::ReadBody(file);
+			break;
+		}
+	}
+}
+
+/**
+ * Reads the body from a file and stores the information into a vector of area
+ * names until the __BODY_END__ tag is reached or the areas specified have
+ * been read. Assumes that some form of processing has put the stream directly
+ * after the newline of the __BODY_BEGIN__ tag.
+ *
+ * @param rawStream Raw input stream to read the body from
+ */
+void Grid::ReadBody(std::istream& rawStream) {
 	std::string line;
 
 	while (std::getline(rawStream, line)) {
@@ -156,17 +279,25 @@ void Grid::ReadBody(std::istream &rawStream) {
 		std::string areaName;
 		unsigned long long column = 0;
 
-		while (std::getline(lineStream, areaName, '\t')) {
-			if (column >= Grid::width) {
+		// Check if the leftmost entry is the end tag and break if it is.
+		// If not, then read as body.
+		if (std::getline(lineStream, areaName, '\t')) {
+			if (areaName == "__BODY_END__" || column >= Grid::width) {
 				break;
 			}
 
-			Grid::areas.push_back(areaName);
-			column++;
+			do {
+				if (column >= Grid::width) {
+					break;
+				}
+
+				Grid::areas.push_back(areaName);
+				column++;
+			} while (std::getline(lineStream, areaName, '\t'));
 		}
 
 		// Fill in empty remaining slots.
-		for (int i = column; i < Grid::width; i++) {
+		for (unsigned long long i = column; i < Grid::width; i++) {
 			Grid::areas.push_back("");
 		}
 	}
@@ -175,8 +306,9 @@ void Grid::ReadBody(std::istream &rawStream) {
 }
 
 /**
- * Gets the adjacent position in the specified direction from the source position.
- * If the adjacent position is out of bounds, then return the source position.
+ * Gets the adjacent position in the specified direction from the source
+ * position. If the adjacent position is out of bounds, then return the source
+ * position.
  *
  * @param sourcePosition Position to consider the 'center'
  * @param direction Cardinal direction of the adjacent position
