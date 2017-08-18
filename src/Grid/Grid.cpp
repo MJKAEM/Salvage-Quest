@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <limits>
 #include <sstream>
 
 Grid::Grid(std::string dataFilePath) {
@@ -25,6 +26,14 @@ Grid::Grid(std::string dataFilePath) {
 	std::getline(file, rawInput, '\t');
 	std::getline(file, rawInput);
 	Grid::height = std::stoull(rawInput);
+
+	// Check that width and height do not exceed limit.
+	if (std::numeric_limits<unsigned long long>::max() / Grid::width
+			< Grid::height) {
+		std::cerr << "Width and height of " << dataFilePath << " exceeds "
+				<< std::numeric_limits<unsigned long long>::max() << std::endl;
+		_exit(0);
+	}
 
 	// Read file until empty.
 	for (unsigned long long row = 0; row < Grid::height; row++) {
@@ -85,9 +94,13 @@ unsigned long long Grid::GetAdjacentPosition(unsigned long long sourcePosition,
 }
 
 std::string Grid::ToString() {
+	return Grid::ToString(Grid::areas.size());
+}
+
+std::string Grid::ToString(unsigned long long position) {
 	size_t maxNameLength = 0;
 
-	for (unsigned long long i = 0; i < Grid::width * Grid::height; i++) {
+	for (unsigned long long i = 0; i < Grid::areas.size(); i++) {
 		maxNameLength = std::max<size_t>(Grid::areas.at(i).length(),
 				maxNameLength);
 	}
