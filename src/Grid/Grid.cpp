@@ -108,12 +108,12 @@ void Grid::ReadMetadata(std::istream &rawStream) {
 	Grid::additionalMetadataMap.erase("map version");
 
 	// Check that width and height are valid. Print error if check fails.
-	if (Grid::GRID_SIZE_LIMIT / Grid::width < Grid::height) {
-		std::cerr << "Grid size of " << Grid::dataFilePath << " exceed "
-				<< Grid::GRID_SIZE_LIMIT << std::endl;
-	} else if (width == 0 || height == 0) {
+	if (width == 0 || height == 0) {
 		std::cerr << "Width or height of " << Grid::dataFilePath
 				<< " is zero or undefined!" << std::endl;
+	} else if (Grid::GRID_SIZE_LIMIT / Grid::width < Grid::height) {
+		std::cerr << "Grid size of " << Grid::dataFilePath << " exceed "
+				<< Grid::GRID_SIZE_LIMIT << std::endl;
 	}
 }
 
@@ -167,7 +167,7 @@ void Grid::ReadBody(std::istream &rawStream) {
 
 		// Fill in empty remaining slots.
 		for (int i = column; i < Grid::width; i++) {
-			 Grid::areas.push_back("");
+			Grid::areas.push_back("");
 		}
 	}
 
