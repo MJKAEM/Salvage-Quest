@@ -20,7 +20,7 @@ int main() {
 		if (commandId == 0) {
 			break;
 		} else if (commandId == 4) {
-			std::cout << overworld.ToString() << std::endl;
+			std::cout << overworld.ToString(46) << std::endl;
 		}
 	}
 

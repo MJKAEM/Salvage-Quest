@@ -111,8 +111,14 @@ std::string Grid::ToString(unsigned long long position) {
 		gridRepresentation.append("|");
 		for (unsigned long long column = 0; column < Grid::width; column++) {
 			std::ostringstream stream;
-			stream << std::setw(maxNameLength)
-					<< Grid::areas.at((row * Grid::width) + column);
+			stream << std::setw(maxNameLength);
+
+			if ((row * Grid::width) + column == position) {
+				stream << "X";
+			} else {
+				stream << Grid::areas.at((row * Grid::width) + column);
+			}
+
 			gridRepresentation.append(stream.str() + "|");
 		}
 		gridRepresentation.append("\n");
