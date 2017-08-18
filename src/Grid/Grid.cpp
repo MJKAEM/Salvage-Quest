@@ -7,6 +7,7 @@
 #include <sstream>
 
 Grid::Grid(std::string dataFilePath) {
+	Grid::dataFilePath = dataFilePath;
 	std::ifstream file(dataFilePath);
 
 	// Check that the file is found and valid.
@@ -15,25 +16,10 @@ Grid::Grid(std::string dataFilePath) {
 		_exit(0);
 	}
 
-	// Read width and height headers.
+	Grid::ReadHeaders(file);
+
+	/*
 	std::string rawInput;
-
-	std::getline(file, rawInput, '\t');
-	std::getline(file, rawInput);
-
-	Grid::width = std::stoull(rawInput);
-
-	std::getline(file, rawInput, '\t');
-	std::getline(file, rawInput);
-	Grid::height = std::stoull(rawInput);
-
-	// Check that width and height do not exceed limit.
-	if (std::numeric_limits<unsigned long long>::max() / Grid::width
-			< Grid::height) {
-		std::cerr << "Width and height of " << dataFilePath << " exceeds "
-				<< std::numeric_limits<unsigned long long>::max() << std::endl;
-		_exit(0);
-	}
 
 	// Read file until empty.
 	for (unsigned long long row = 0; row < Grid::height; row++) {
@@ -54,9 +40,95 @@ Grid::Grid(std::string dataFilePath) {
 			Grid::areas.push_back("");
 			column++;
 		}
-	}
+	}*/
 
 	file.close();
+}
+
+/**
+ * Reads the file header for information and sets the Grid values listed..
+ *
+ * @param rawStream Raw input stream to read the headers from
+ */
+void Grid::ReadHeaders(std::istream &rawStream) {
+	std::string line;
+
+	while (std::getline(rawStream, line)) {
+		std::istringstream lineStream(line);
+
+		std::string tag;
+		std::getline(lineStream, tag, '\t');
+
+		if (tag == "__METADATA_BEGIN__") {
+			Grid::ReadMetadata(rawStream);
+		} else if (tag == "__SHORTCUTS_BEGIN__") {
+			Grid::ReadShortcuts(rawStream);
+		}
+	}
+}
+
+/**
+ * Read metadata from a file and stores the information into their respective variables
+ * until the __METADATA_END__ tag is reached. Prints out errors in metadata information.
+ * Assumes that some form of processing has put rawFile to point right after the newline
+ * of the __METADATA_BEGIN__ tag.
+ *
+ * @param rawStream Raw input stream to read the metadata from
+ */
+void Grid::ReadMetadata(std::istream &rawStream) {
+	std::map<std::string, std::string> metadataMap;
+
+	std::string line;
+	while (std::getline(rawStream, line)) {
+		std::istringstream lineStream(line);
+
+		std::string key;
+		std::getline(lineStream, key, '\t');
+
+		if (key == "__METADATA_END__") {
+			break;
+		}
+
+		for (size_t i = 0; i < key.length(); i++) {
+			key[i] = std::tolower(key.at(i));
+		}
+
+		std::string value;
+		std::getline(lineStream, value, '\t');
+
+		if (!metadataMap.emplace(key, value).second) {
+			std::cerr << "Duplicate metadata entry in " << Grid::dataFilePath << std::endl;
+		}
+	}
+
+	Grid::width =
+			metadataMap.find("width") ?
+					std::stoull(metadataMap.at("width")) : 0;
+	Grid::height =
+			metadataMap.find("height") ?
+					std::stoull(metadataMap.at("height")) : 0;
+	Grid::name =
+			metadataMap.find("name") ?
+					metadataMap.at("name") : Grid::dataFilePath;
+	Grid::author = metadataMap.find("author") ? metadataMap.at("author") : "";
+	Grid::description =
+			metadataMap.find("description") ?
+					metadataMap.at("description") : "";
+	Grid::targetVersion =
+			metadataMap.find("target version") ?
+					metadataMap.at("target version") : "";
+	Grid::mapVersion =
+			metadataMap.find("map version") ?
+					metadataMap.at("map version") : "";
+
+	// Check that width and height are valid. Print error if check fails.
+	if (Grid::GRID_SIZE_LIMIT / Grid::width < Grid::height) {
+		std::cerr << "Grid size of " << Grid::dataFilePath << " exceed "
+				<< Grid::GRID_SIZE_LIMIT << std::endl;
+	} else if (width == 0 || height == 0) {
+		std::cerr << "Width or height of " << Grid::dataFilePath
+				<< " is zero or undefined!" << std::endl;
+	}
 }
 
 /**
