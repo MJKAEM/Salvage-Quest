@@ -24,7 +24,7 @@ wh	Warehouse
 ws	Weapon Store													
 __SHORTCUTS_END__														
 __HEADER_END__														
-__BODY_BEGIN__
+__BODY_BEGIN__														
 														
 	wh													
 											sb			
@@ -41,4 +41,4 @@ __BODY_BEGIN__
 														
 											ws	sw	fd	
 											br	$v	$o	gs
-__BODY_END__
+__BODY_END__														

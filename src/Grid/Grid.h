@@ -16,6 +16,8 @@ enum Direction {
 class Grid {
 private:
 	std::vector<std::string> areas;
+	std::map<std::string, std::string> additionalMetadataMap;
+	std::map<std::string, std::string> shortcutToAreaNameMap;
 	unsigned long long width, height;
 	std::string dataFilePath;
 	std::string name, author, description;
@@ -25,6 +27,7 @@ private:
 	void ReadHeaders(std::istream&);
 	void ReadMetadata(std::istream&);
 	void ReadShortcuts(std::istream&);
+	void ReadBody(std::istream&);
 
 public:
 	const unsigned long long GRID_SIZE_LIMIT = std::numeric_limits<unsigned long long>::max();

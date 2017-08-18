@@ -18,30 +18,6 @@ Grid::Grid(std::string dataFilePath) {
 
 	Grid::ReadHeaders(file);
 
-	/*
-	std::string rawInput;
-
-	// Read file until empty.
-	for (unsigned long long row = 0; row < Grid::height; row++) {
-		std::getline(file, rawInput);
-		std::istringstream lineStream(rawInput);
-
-		unsigned long long column = 0;
-		while (std::getline(lineStream, rawInput, '\t')) {
-			if (column >= Grid::width) {
-				break;
-			}
-
-			Grid::areas.push_back(rawInput);
-			column++;
-		}
-
-		while (column < Grid::width) {
-			Grid::areas.push_back("");
-			column++;
-		}
-	}*/
-
 	file.close();
 }
 
@@ -63,6 +39,8 @@ void Grid::ReadHeaders(std::istream &rawStream) {
 			Grid::ReadMetadata(rawStream);
 		} else if (tag == "__SHORTCUTS_BEGIN__") {
 			Grid::ReadShortcuts(rawStream);
+		} else if (tag == "__HEADER_END__") {
+			break;
 		}
 	}
 }
@@ -70,14 +48,12 @@ void Grid::ReadHeaders(std::istream &rawStream) {
 /**
  * Read metadata from a file and stores the information into their respective variables
  * until the __METADATA_END__ tag is reached. Prints out errors in metadata information.
- * Assumes that some form of processing has put rawFile to point right after the newline
+ * Assumes that some form of processing has put the stream to directly after the newline
  * of the __METADATA_BEGIN__ tag.
  *
  * @param rawStream Raw input stream to read the metadata from
  */
 void Grid::ReadMetadata(std::istream &rawStream) {
-	std::map<std::string, std::string> metadataMap;
-
 	std::string line;
 	while (std::getline(rawStream, line)) {
 		std::istringstream lineStream(line);
@@ -96,30 +72,40 @@ void Grid::ReadMetadata(std::istream &rawStream) {
 		std::string value;
 		std::getline(lineStream, value, '\t');
 
-		if (!metadataMap.emplace(key, value).second) {
-			std::cerr << "Duplicate metadata entry in " << Grid::dataFilePath << std::endl;
+		if (!Grid::additionalMetadataMap.emplace(key, value).second) {
+			std::cerr << "Duplicate metadata entry in " << Grid::dataFilePath
+					<< std::endl;
 		}
 	}
 
 	Grid::width =
-			metadataMap.find("width") ?
-					std::stoull(metadataMap.at("width")) : 0;
+			Grid::additionalMetadataMap.find("width") ?
+					std::stoull(Grid::additionalMetadataMap.at("width")) : 0;
+	Grid::additionalMetadataMap.erase("width");
 	Grid::height =
-			metadataMap.find("height") ?
-					std::stoull(metadataMap.at("height")) : 0;
+			Grid::additionalMetadataMap.find("height") ?
+					std::stoull(Grid::additionalMetadataMap.at("height")) : 0;
+	Grid::additionalMetadataMap.erase("height");
 	Grid::name =
-			metadataMap.find("name") ?
-					metadataMap.at("name") : Grid::dataFilePath;
-	Grid::author = metadataMap.find("author") ? metadataMap.at("author") : "";
+			Grid::additionalMetadataMap.find("name") ?
+					Grid::additionalMetadataMap.at("name") : Grid::dataFilePath;
+	Grid::additionalMetadataMap.erase("name");
+	Grid::author =
+			Grid::additionalMetadataMap.find("author") ?
+					Grid::additionalMetadataMap.at("author") : "";
+	Grid::additionalMetadataMap.erase("author");
 	Grid::description =
-			metadataMap.find("description") ?
-					metadataMap.at("description") : "";
+			Grid::additionalMetadataMap.find("description") ?
+					Grid::additionalMetadataMap.at("description") : "";
+	Grid::additionalMetadataMap.erase("description");
 	Grid::targetVersion =
-			metadataMap.find("target version") ?
-					metadataMap.at("target version") : "";
+			Grid::additionalMetadataMap.find("target version") ?
+					Grid::additionalMetadataMap.at("target version") : "";
+	Grid::additionalMetadataMap.erase("target version");
 	Grid::mapVersion =
-			metadataMap.find("map version") ?
-					metadataMap.at("map version") : "";
+			Grid::additionalMetadataMap.find("map version") ?
+					Grid::additionalMetadataMap.at("map version") : "";
+	Grid::additionalMetadataMap.erase("map version");
 
 	// Check that width and height are valid. Print error if check fails.
 	if (Grid::GRID_SIZE_LIMIT / Grid::width < Grid::height) {
@@ -129,6 +115,63 @@ void Grid::ReadMetadata(std::istream &rawStream) {
 		std::cerr << "Width or height of " << Grid::dataFilePath
 				<< " is zero or undefined!" << std::endl;
 	}
+}
+
+/**
+ * Read shortcuts from a file and stores the information into a map of shortcut to area name
+ * until the __SHORTCUTS_END__ tag is reached. Assumes that some form of processing has put
+ * the stream directly after the newline of the __SHORTCUTS_BEGIN__ tag.
+ *
+ * @param rawStream Raw input stream to read the shortcuts from
+ */
+void Grid::ReadShortcuts(std::istream &rawStream) {
+	std::string line;
+	while (std::getline(rawStream, line)) {
+		std::istringstream lineStream(line);
+
+		std::string key;
+		std::getline(lineStream, key, '\t');
+
+		if (key == "__SHORTCUTS_END__") {
+			break;
+		}
+
+		std::string value;
+		std::getline(lineStream, value, '\t');
+
+		if (!Grid::shortcutToAreaNameMap.emplace(key, value).second) {
+			std::cerr << "Duplicate shortcut entry in " << Grid::dataFilePath
+					<< std::endl;
+		}
+
+		Grid::shortcutToAreaNameMap.emplace(key, value);
+	}
+}
+
+void Grid::ReadBody(std::istream &rawStream) {
+	std::string line;
+
+	while (std::getline(rawStream, line)) {
+		std::istringstream lineStream(line);
+		std::string areaName;
+		unsigned long long column = 0;
+
+		while (std::getline(lineStream, areaName, '\t')) {
+			if (column >= Grid::width) {
+				break;
+			}
+
+			Grid::areas.push_back(areaName);
+			column++;
+		}
+
+		// Fill in empty remaining slots.
+		for (int i = column; i < Grid::width; i++) {
+			 Grid::areas.push_back("");
+		}
+	}
+
+	Grid::areas.resize(Grid::width * Grid::height);
 }
 
 /**
