@@ -1,6 +1,6 @@
 Do not distribute this file without the permission of Martino Kuan.														
 														
-__HEADER_BEGIN__		Do not remove this tag or this comment under any circumstance!												
+__HEADER_BEGIN__														
 __METADATA_BEGIN__														
 Target Version	00.00.04													
 File Version	00.00.04													

@@ -66,7 +66,7 @@ void Grid::ReadMetadata(std::istream &rawStream) {
 		}
 
 		for (size_t i = 0; i < key.length(); i++) {
-			key[i] = std::tolower(key.at(i));
+			key.at(i) = std::tolower(key.at(i));
 		}
 
 		std::string value;
