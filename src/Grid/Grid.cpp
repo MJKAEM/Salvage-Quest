@@ -28,14 +28,23 @@ Grid::Grid(std::string dataFilePath) {
 
 	// Read file until empty.
 	for (unsigned long long row = 0; row < Grid::height; row++) {
-		for (unsigned long long column = 0; column < Grid::width - 1;
-				column++) {
-			std::getline(file, rawInput, '\t');
+		std::getline(file, rawInput);
+		std::istringstream lineStream(rawInput);
+
+		unsigned long long column = 0;
+		while (std::getline(lineStream, rawInput, '\t')) {
+			if (column >= Grid::width) {
+				break;
+			}
+
 			Grid::areas.push_back(rawInput);
+			column++;
 		}
 
-		std::getline(file, rawInput);
-		Grid::areas.push_back(rawInput);
+		while (column < Grid::width) {
+			Grid::areas.push_back("");
+			column++;
+		}
 	}
 
 	file.close();
@@ -79,10 +88,9 @@ std::string Grid::ToString() {
 	size_t maxNameLength = 0;
 
 	for (unsigned long long i = 0; i < Grid::width * Grid::height; i++) {
-		maxNameLength = std::max(Grid::areas.at(i).length(), maxNameLength);
+		maxNameLength = std::max<size_t>(Grid::areas.at(i).length(),
+				maxNameLength);
 	}
-
-	std::cout << maxNameLength << std::endl;
 
 	std::string gridRepresentation;
 
@@ -90,7 +98,8 @@ std::string Grid::ToString() {
 		gridRepresentation.append("|");
 		for (unsigned long long column = 0; column < Grid::width; column++) {
 			std::ostringstream stream;
-			stream << std::setw(maxNameLength) << Grid::areas.at((row * Grid::width) + column);
+			stream << std::setw(maxNameLength)
+					<< Grid::areas.at((row * Grid::width) + column);
 			gridRepresentation.append(stream.str() + "|");
 		}
 		gridRepresentation.append("\n");
