@@ -22,7 +22,7 @@ private:
 	unsigned long long width, height;
 	std::string dataFilePath;
 	std::string name, author, description;
-	std::string targetVersion, mapVersion;
+	std::string targetVersion, fileVersion;
 
 	Grid();
 	void ReadHeaders();

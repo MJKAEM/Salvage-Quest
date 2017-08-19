@@ -161,10 +161,10 @@ void Grid::ReadMetadata(std::istream& rawStream) {
 			Grid::additionalMetadataMap.count("target version") ?
 					Grid::additionalMetadataMap.at("target version") : "";
 	Grid::additionalMetadataMap.erase("target version");
-	Grid::mapVersion =
-			Grid::additionalMetadataMap.count("map version") ?
-					Grid::additionalMetadataMap.at("map version") : "";
-	Grid::additionalMetadataMap.erase("map version");
+	Grid::fileVersion =
+			Grid::additionalMetadataMap.count("file version") ?
+					Grid::additionalMetadataMap.at("file version") : "";
+	Grid::additionalMetadataMap.erase("file version");
 
 	// Check that width and height are valid. Print error if check fails.
 	if (width == 0 || height == 0) {
@@ -403,5 +403,5 @@ std::string Grid::GetTargetVersion() {
 }
 
 std::string Grid::GetMapVersion() {
-	return Grid::mapVersion;
+	return Grid::fileVersion;
 }
