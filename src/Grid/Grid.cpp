@@ -345,6 +345,10 @@ std::string Grid::ToString() {
 }
 
 std::string Grid::ToString(unsigned long long position) {
+	if (Grid::areas.empty() != Grid::width * Grid::height) {
+		Grid::ReadBody();
+	}
+
 	size_t maxNameLength = 0;
 
 	for (unsigned long long i = 0; i < Grid::areas.size(); i++) {
@@ -372,4 +376,32 @@ std::string Grid::ToString(unsigned long long position) {
 	}
 
 	return gridRepresentation;
+}
+
+unsigned long long Grid::GetWidth() {
+	return Grid::width;
+}
+
+unsigned long long Grid::GetHeight() {
+	return Grid::height;
+}
+
+std::string Grid::GetName() {
+	return Grid::name;
+}
+
+std::string Grid::GetAuthor() {
+	return Grid::author;
+}
+
+std::string Grid::GetDescription() {
+	return Grid::description;
+}
+
+std::string Grid::GetTargetVersion() {
+	return Grid::targetVersion;
+}
+
+std::string Grid::GetMapVersion() {
+	return Grid::mapVersion;
 }
