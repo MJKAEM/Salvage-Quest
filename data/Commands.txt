@@ -3,3 +3,4 @@ invalid	0
 move	1
 buy	2
 sell	3
+map	4

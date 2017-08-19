@@ -1,9 +1,13 @@
 #include <iostream>
 #include <string>
+
 #include "Commands/Commands.h"
+#include "DataFileNames.h"
+#include "Grid/Grid.h"
 
 int main() {
 	Commands::Initialize();
+	Grid overworld(RawData::overworldFile);
 
 	while (true) {
 		std::string input;
@@ -15,6 +19,8 @@ int main() {
 
 		if (commandId == 0) {
 			break;
+		} else if (commandId == 4) {
+			std::cout << overworld.ToString(46) << std::endl;
 		}
 	}
 

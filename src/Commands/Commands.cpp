@@ -1,4 +1,5 @@
 #include "Commands.h"
+
 #include <iostream>
 #include <fstream>
 #include "../DataFileNames.h"
@@ -10,11 +11,11 @@ void Commands::Initialize() {
 }
 
 void Commands::ReadDataFile(){
-	std::ifstream file(commandsRawDataFile);
+	std::ifstream file(RawData::commandsFile);
 
 	// Check that the file is found and valid.
 	if (!file.good()) {
-		std::cerr << "Failed to load resource: " << commandsRawDataFile << std::endl;
+		std::cerr << "Failed to load resource: " << RawData::commandsFile << std::endl;
 		_exit(0);
 	}
 
