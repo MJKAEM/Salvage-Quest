@@ -13,7 +13,7 @@ Grid::Grid(std::string dataFilePath) {
 	// Check that the file is found and valid.
 	if (!file.good()) {
 		std::cerr << "Failed to load resource: " << dataFilePath << std::endl;
-		_exit(0);
+		std::exit(0);
 	}
 
 	Grid::ReadHeaders(file);
@@ -335,7 +335,7 @@ unsigned long long Grid::GetAdjacentPosition(unsigned long long sourcePosition,
 	default:
 		std::cerr << "Invalid direction at: " << __FILE__ << ", line: "
 				<< __LINE__ << std::endl;
-		_exit(0);
+		std::exit(0);
 		return sourcePosition;
 	}
 }

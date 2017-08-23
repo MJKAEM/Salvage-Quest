@@ -16,7 +16,7 @@ void Commands::ReadDataFile(){
 	// Check that the file is found and valid.
 	if (!file.good()) {
 		std::cerr << "Failed to load resource: " << RawData::commandsFile << std::endl;
-		_exit(0);
+		std::exit(0);
 	}
 
 	// Ignore first line.
